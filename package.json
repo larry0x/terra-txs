@@ -1,0 +1,32 @@
+{
+  "name": "claim-astro-generator-reward",
+  "description": "A CLI tool for claiming staking reward from the Astro generator contract",
+  "version": "0.1.0",
+  "author": "larry <larry_0x@protonmail.com>",
+  "main": "src/main.ts",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --fix"
+  },
+  "dependencies": {
+    "@terra-money/terra.js": "^3.0.4",
+    "promptly": "^3.2.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/promptly": "^3.0.2",
+    "@types/yargs": "^17.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "eslint": "^8.7.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
