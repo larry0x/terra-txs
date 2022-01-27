@@ -7,6 +7,7 @@ import { hideBin } from "yargs/helpers";
 import { LCDClient, LocalTerra } from "@terra-money/terra.js";
 import * as keystore from "./keystore";
 import * as reward from "./reward";
+import * as swap from "./swap";
 
 const CONFIG_DIR = ".claim-astro-generator-reward";
 
@@ -93,6 +94,13 @@ async function executeClaimReward(keyName: string, network: string, lcd?: string
   await reward.claimReward(terra, signer);
 }
 
+async function executeSwapAstro(keyName: string, network: string, lcd?: string) {
+  const terra = makeLcdClient(network, lcd);
+  const signer = await loadKey(terra, keyName);
+
+  await swap.swapAstroToUst(terra, signer);
+}
+
 (async () => {
   makeConfigDir();
   await yargs(hideBin(process.argv))
@@ -157,6 +165,32 @@ async function executeClaimReward(keyName: string, network: string, lcd?: string
       },
       (argv) => {
         executeClaimReward(argv["key-name"], argv.network, argv.lcd).catch((e) => console.log(e));
+      },
+    )
+    .command(
+      "swap-astro [key-name] [--network [network]] [--lcd [url]]",
+      "Swap the user's ASTRO tokens to UST",
+      (yargs) => {
+        return yargs
+          .positional("key-name", {
+            type: "string",
+            describe: "name of the account whose coins are to be swapped",
+            demandOption: true,
+          })
+          .option("network", {
+            type: "string",
+            describe: "network to broadcast the tx",
+            default: "mainnet",
+            demandOption: false,
+          })
+          .option("lcd", {
+            type: "string",
+            describe: "URL of a Terra LCD node for broadcasting the tx",
+            demandOption: false,
+          });
+      },
+      (argv) => {
+        executeSwapAstro(argv["key-name"], argv.network, argv.lcd).catch((e) => console.log(e));
       },
     )
     .wrap(100)

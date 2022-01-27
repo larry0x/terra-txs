@@ -19,3 +19,22 @@ export async function sendTransaction(terra: LCDClient, signer: Wallet, msgs: Ms
   }
   return result;
 }
+
+/**
+ * Find CW20 token balance of the specified account
+ */
+export async function queryCw20Balance(terra: LCDClient, user: string, token: string) {
+  const balanceResponse: { balance: string } = await terra.wasm.contractQuery(token, {
+    balance: {
+      address: user,
+    },
+  });
+  return parseInt(balanceResponse.balance);
+}
+
+/**
+ * Encode a JSON object to base64 string
+ */
+export function encodeBase64(obj: object | string | number | null | undefined) {
+  return Buffer.from(JSON.stringify(obj)).toString("base64");
+}
