@@ -9,6 +9,7 @@ import * as keystore from "./keystore";
 import * as reward from "./reward";
 import * as multiswap from "./swap_terra";
 import * as swap from "./swap_astro";
+import * as save from "./save";
 
 const CONFIG_DIR = ".claim-astro-generator-reward";
 
@@ -107,6 +108,13 @@ async function executeSwapTerra(keyName: string, network: string, lcd?: string) 
   const signer = await loadKey(terra, keyName);
 
   await multiswap.swapTerraToUst(terra, signer);
+}
+
+async function executeDepositUusd(keyName: string, amount: number, network: string, lcd?: string) {
+  const terra = makeLcdClient(network, lcd);
+  const signer = await loadKey(terra, keyName);
+
+  await save.depositUusdToAnchor(terra, signer, amount);
 }
 
 (async () => {
@@ -225,6 +233,39 @@ async function executeSwapTerra(keyName: string, network: string, lcd?: string) 
       },
       (argv) => {
         executeSwapTerra(argv["key-name"], argv.network, argv.lcd).catch((e) => console.log(e));
+      },
+    )
+    .command(
+      "deposit-uusd [key-name] [amount] [--network [network]] [--lcd [url]]",
+      "Swap the user's native coins (except for UST and LUNA) to UST",
+      (yargs) => {
+        return yargs
+          .positional("key-name", {
+            type: "string",
+            describe: "name of the account whose coins are to be swapped",
+            demandOption: true,
+          })
+          .positional("amount", {
+            type: "number",
+            describe: "amount of uusd to deposit",
+            demandOption: true,
+          })
+          .option("network", {
+            type: "string",
+            describe: "network to broadcast the tx",
+            default: "mainnet",
+            demandOption: false,
+          })
+          .option("lcd", {
+            type: "string",
+            describe: "URL of a Terra LCD node for broadcasting the tx",
+            demandOption: false,
+          });
+      },
+      (argv) => {
+        executeDepositUusd(argv["key-name"], argv["amount"], argv.network, argv.lcd).catch((e) =>
+          console.log(e),
+        );
       },
     )
     .wrap(100)
